@@ -1,0 +1,7 @@
+*.exe
+*.log
+.vscode
+*.txt
+debug
+test.cpp
+keylogger.cpp
