@@ -2,11 +2,12 @@
 #include <string>
 #include <fstream>
 #include <Windows.h>
+#include <signal.h>
 #include <time.h>
 #include <lmcons.h>
 using namespace std;
 
-char FILENAME[256]; // = "log.txt";
+char FILENAME[256];
 wchar_t prev_window[256];
 wchar_t curr_window[256];
 
