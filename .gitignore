@@ -3,5 +3,5 @@
 .vscode
 *.txt
 debug
-test.cpp
-keylogger.cpp
+test
+keylogger-naive.cpp

