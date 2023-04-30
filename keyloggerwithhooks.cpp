@@ -11,10 +11,9 @@ char FILENAME[256];
 wchar_t prev_window[256];
 wchar_t curr_window[256];
 string DELIM = "[&&]"; //Delimeter added for easy conversion of log files to csv on the server
+string GDRIVEPATH = "G:/My Drive/Logs/"; //Path to Google Drive mounted as a virtual drive on the computer
 
 const char* setPath(){
-    string gdrivepath = "G:/My Drive/Logs/";
-
     //----Extracting today's date---//
     time_t curr_datetime = time(NULL);
     tm *timeptr = localtime(&curr_datetime);
@@ -22,12 +21,12 @@ const char* setPath(){
     strftime(datebuf, sizeof(datebuf), "%Y-%m-%d", timeptr); // YYYY-MM-DD format
 
     //-------Creating a directory named today's date----//
-    gdrivepath += string(datebuf);
-    wstring temp(gdrivepath.begin(), gdrivepath.end());
+    GDRIVEPATH += string(datebuf);
+    wstring temp(GDRIVEPATH.begin(), GDRIVEPATH.end());
     LPCWSTR GoogleDriveDirectory = temp.c_str();
     CreateDirectoryW(GoogleDriveDirectory, NULL);
-    gdrivepath += "/";
-    return gdrivepath.c_str();
+    GDRIVEPATH += "/";
+    return GDRIVEPATH.c_str();
 }
 
 void SetFileName()
